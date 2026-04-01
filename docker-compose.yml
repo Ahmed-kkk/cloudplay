@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  gaming-platform:
+    build: .
+    container_name: gaming-server
+    restart: always
+    ports:
+      - '80:80'
+    volumes:
+      - ./roms:/usr/share/nginx/html/roms
+      - ./html:/usr/share/nginx/html
+    environment:
+      - TZ=Africa/Cairo
