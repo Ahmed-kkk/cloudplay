@@ -1,0 +1,135 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>دومينو المحترفين - Pro Domino</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <div id="ui-layer">
+        <div id="menu">
+            <h1>دومينو المحترفين</h1>
+            <p>اختر مستوى الصعوبة</p>
+            <button class="btn" onclick="startGame(51)">مبتدئ (51)</button>
+            <button class="btn" onclick="startGame(101)">متوسط (101)</button>
+            <button class="btn" onclick="startGame(151)">صعب (151)</button>
+            <button class="btn" onclick="startGame(201)">أسطوري (201)</button>
+        </div>
+
+        <div id="hud" style="display: none;">
+            <div class="score-box">
+                <span id="player-name">أنت</span>: <span id="player-score">0</span>
+            </div>
+            <div class="score-box">
+                الخصم: <span id="opponent-score">0</span>
+            </div>
+        </div>
+
+        <div id="message-log"></div>
+
+        <div id="game-controls" class="controls" style="display: none;">
+            <button class="btn" id="draw-btn" onclick="handleDraw()">سحب</button>
+            <button class="btn" id="skip-btn" onclick="handleSkip()">تخطي</button>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+    <script src="js/scene.js"></script>
+    <script>
+        let game;
+
+        function startGame(target) {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('hud').style.display = 'flex';
+            document.getElementById('game-controls').style.display = 'block';
+
+            game = new DominoGame({ numPlayers: 2, targetScore: target });
+            init3D('game-container');
+            startRound();
+        }
+
+        function startRound() {
+            game.startNewRound();
+            updateUI();
+            renderBoard(game.board);
+            updateHand(game.players[0].hand, handleTileClick);
+
+            if (game.currentPlayerIndex !== 0) {
+                setTimeout(computerTurn, 1000);
+            }
+        }
+
+        function handleTileClick(index) {
+            if (game.currentPlayerIndex !== 0) return;
+
+            const moves = game.getValidMoves(0);
+            const moveIndex = moves.findIndex(m => m.index === index);
+
+            if (moveIndex !== -1) {
+                const result = game.playMove(0, moveIndex);
+                processTurnResult(result);
+            } else {
+                showMessage("حركة غير صالحة!");
+            }
+        }
+
+        function handleDraw() {
+            if (game.currentPlayerIndex !== 0) return;
+            if (game.canDraw(0)) {
+                game.drawTile(0);
+                updateHand(game.players[0].hand, handleTileClick);
+            } else {
+                showMessage("لا يمكنك السحب أكثر!");
+            }
+        }
+
+        function handleSkip() {
+            if (game.currentPlayerIndex !== 0) return;
+            if (game.getValidMoves(0).length === 0) {
+                const result = game.skipTurn(0);
+                processTurnResult(result);
+            } else {
+                showMessage("يجب أن تلعب إذا كان لديك حركة!");
+            }
+        }
+
+        function computerTurn() {
+            const result = game.makeComputerMove(game.currentPlayerIndex);
+            processTurnResult(result);
+        }
+
+        function processTurnResult(result) {
+            renderBoard(game.board);
+            updateHand(game.players[0].hand, handleTileClick);
+            updateUI();
+
+            if (result.type === 'roundEnd') {
+                showMessage(result.winner === 0 ? "لقد فزت بالجولة!" : "فاز الخصم بالجولة!");
+                setTimeout(startRound, 3000);
+                return;
+            }
+
+            if (game.currentPlayerIndex !== 0) {
+                setTimeout(computerTurn, 1000);
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('player-score').textContent = game.players[0].score;
+            document.getElementById('opponent-score').textContent = game.players[1].score;
+        }
+
+        function showMessage(msg) {
+            const log = document.getElementById('message-log');
+            log.textContent = msg;
+            log.style.display = 'block';
+            setTimeout(() => { log.style.display = 'none'; }, 2000);
+        }
+    </script>
+</body>
+</html>

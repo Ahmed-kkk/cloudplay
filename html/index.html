@@ -485,6 +485,7 @@ const games = [
   { name:"Super Mario World",    sys:"snes",   rom:"https://archive.org/download/super-mario-world/Super%20Mario%20World%20%28USA%29.sfc",            cover:"", emoji:"🍄" },
   { name:"Pokemon Fire Red",     sys:"gba",    rom:"https://archive.org/download/pokemon-firered-usa/Pokemon%20-%20Fire%20Red%20Version%20%28USA%2C%20Europe%29.gba", cover:"", emoji:"🔥" },
   { name:"Sonic the Hedgehog",   sys:"segaMD", rom:"https://archive.org/download/sonic-the-hedgehog-usa/Sonic%20the%20Hedgehog%20%28USA%2C%20Europe%29.md", cover:"", emoji:"⚡" },
+  { name:"Pro Domino",           sys:"html",   rom:"domino/index.html", cover:"", emoji:"🎲" },
   { name:"The Legend of Zelda",  sys:"snes",   rom:"https://archive.org/download/zelda-a-link-to-the-past-usa/Legend%20of%20Zelda%2C%20The%20-%20A%20Link%20to%20the%20Past%20%28USA%29.sfc", cover:"", emoji:"🗡️" },
   { name:"Donkey Kong Country",  sys:"snes",   rom:"https://archive.org/download/donkey-kong-country/Donkey%20Kong%20Country%20%28USA%29.sfc",         cover:"", emoji:"🍌" },
   { name:"Mega Man X",           sys:"snes",   rom:"https://archive.org/download/mega-man-x-usa/Mega%20Man%20X%20%28USA%29.sfc",                       cover:"", emoji:"🤖" },
@@ -526,6 +527,12 @@ function filterGames(sys, btn) {
 
 function play(i) {
   const g = games[i];
+
+  if (g.sys === 'html') {
+    window.location.href = g.rom;
+    return;
+  }
+
   document.getElementById('player-title').textContent = g.name;
   document.getElementById('emu-overlay').classList.add('active');
   document.body.style.overflow = 'hidden';
