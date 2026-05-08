@@ -494,6 +494,7 @@ const games = [
   { name:"Final Fantasy VI",     sys:"snes",   rom:"https://archive.org/download/final-fantasy-iii-usa/Final%20Fantasy%20III%20%28USA%29.sfc",          cover:"", emoji:"⚔️" },
   { name:"Pokemon Emerald",      sys:"gba",    rom:"https://archive.org/download/pokemon-emerald-usa/Pokemon%20-%20Emerald%20Version%20%28USA%2C%20Europe%29.gba", cover:"", emoji:"💎" },
   { name:"Mario Kart: Super Circuit", sys:"gba", rom:"https://archive.org/download/mario-kart-super-circuit/Mario%20Kart%20-%20Super%20Circuit%20%28USA%2C%20Europe%29.gba", cover:"", emoji:"🏎️" },
+  { name:"CloudPlay Dominoes",   sys:"native", rom:"domino/index.html", cover:"", emoji:"🎲" },
 ];
 
 let currentFilter = 'all';
@@ -531,6 +532,12 @@ function play(i) {
   document.body.style.overflow = 'hidden';
 
   const container = document.getElementById('player-container');
+
+  if (g.sys === 'native') {
+    container.innerHTML = `<iframe src="${g.rom}" style="width:100%;height:100%;border:none;"></iframe>`;
+    return;
+  }
+
   container.innerHTML = `<div id="game" style="width:100%;height:100%;"></div>`;
 
   window.EJS_player = '#game';
